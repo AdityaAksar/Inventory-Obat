@@ -1,6 +1,5 @@
 package com.example.inventoryobat;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -8,9 +7,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AlertDialog;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.bumptech.glide.Glide;
 import com.example.inventoryobat.databinding.ActivityInfoProdukBinding;
 
 public class InfoProdukActivity extends AppCompatActivity {
@@ -26,9 +26,10 @@ public class InfoProdukActivity extends AppCompatActivity {
         binding = ActivityInfoProdukBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        viewModel = new MainViewModel(this);
+        viewModel = new MainViewModel();
 
         int obatId = getIntent().getIntExtra("obat_id", -1);
+
         if (obatId != -1) {
             loadObatDetail(obatId);
         } else {
@@ -48,9 +49,7 @@ public class InfoProdukActivity extends AppCompatActivity {
             binding.edtQuantity.setText(String.valueOf(quantity));
         });
 
-        binding.btnUpdateStock.setOnClickListener(v -> {
-            updateStock();
-        });
+        binding.btnUpdateStock.setOnClickListener(v -> updateStock());
     }
 
     @Override
@@ -60,61 +59,51 @@ public class InfoProdukActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-
-        if (id == R.id.action_edit) {
-            editObat();
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == R.id.action_edit) {
+            Intent editIntent = new Intent(this, TambahObatActivity.class);
+            editIntent.putExtra("edit_mode", true);
+            editIntent.putExtra("obat_id", currentObat.getIdObat());
+            startActivity(editIntent);
             return true;
-        } else if (id == R.id.action_delete) {
-            showDeleteConfirmationDialog();
+        } else if (item.getItemId() == R.id.action_delete) {
+            viewModel.deleteObat(currentObat.getIdObat());
+            Toast.makeText(this, "Obat dihapus", Toast.LENGTH_SHORT).show();
+            finish();
             return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 
     private void loadObatDetail(int obatId) {
-        DatabaseHelper db = new DatabaseHelper(this);
-        currentObat = db.getObatById(obatId);
+        viewModel.getObatById(obatId).observe(this, obat -> {
+            if (obat != null) {
+                currentObat = obat;
+                binding.tvNamaObatDetail.setText(obat.getNamaObat());
+//                binding.tvJenisObatDetail.setText("Jenis: " + obat.getJenisObat());
+                binding.tvJenisObatDetail.setText("Jenis: " + currentObat.getJenisObat());
+                binding.tvStockDetail.setText("Stock: " + obat.getStock());
 
-        if (currentObat != null) {
-            binding.tvNamaObatDetail.setText(currentObat.getNamaObat());
-            binding.tvJenisObatDetail.setText("Jenis: " + currentObat.getJenisObat().getDisplayName());
-            binding.tvStockDetail.setText("Stock: " + currentObat.getStock());
+                if (obat.getSupplier() != null) {
+                    binding.tvSupplierDetail.setText("Supplier: " + obat.getSupplier().getNamaSupplier());
+                    binding.tvEmailSupplier.setText("Email: " + obat.getSupplier().getEmail());
+                    binding.tvNomorSupplier.setText("Nomor: " + obat.getSupplier().getNomor());
+                }
 
-            if (currentObat.getSupplier() != null) {
-                Supplier supplier = currentObat.getSupplier();
-                binding.tvSupplierDetail.setText("Supplier: " + supplier.getNamaSupplier());
-                binding.tvEmailSupplier.setText("Email: " + supplier.getEmail());
-                binding.tvNomorSupplier.setText("Nomor: " + supplier.getNomor());
-            }
-
-            if (currentObat.getGambar() != null && !currentObat.getGambar().isEmpty()) {
-                try {
-                    Uri imageUri = Uri.parse(currentObat.getGambar());
-                    binding.imgObatDetail.setImageURI(imageUri);
-                } catch (SecurityException e) {
-                    e.printStackTrace();
-                    binding.imgObatDetail.setImageResource(R.drawable.ic_launcher_foreground);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    binding.imgObatDetail.setImageResource(R.drawable.ic_launcher_foreground);
+                if (obat.getGambarUrl() != null && !obat.getGambarUrl().isEmpty()) {
+                    Glide.with(this)
+                            .load(obat.getGambarUrl())
+                            .placeholder(R.drawable.ic_launcher_foreground)
+                            .error(R.drawable.ic_launcher_foreground)
+                            .into(binding.imgObatDetail);
                 }
             }
-        } else {
-            Toast.makeText(this, "Data obat tidak ditemukan", Toast.LENGTH_SHORT).show();
-            finish();
-        }
+        });
     }
 
     private void updateStock() {
-        if (currentObat == null) {
-            Toast.makeText(this, "Data obat tidak valid", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
         String quantityStr = binding.edtQuantity.getText().toString().trim();
+
         if (quantityStr.isEmpty()) {
             Toast.makeText(this, "Masukkan jumlah quantity", Toast.LENGTH_SHORT).show();
             return;
@@ -130,48 +119,5 @@ public class InfoProdukActivity extends AppCompatActivity {
         } else {
             Toast.makeText(this, "Stock tidak boleh negatif", Toast.LENGTH_SHORT).show();
         }
-    }
-
-    private void editObat() {
-        if (currentObat == null) {
-            Toast.makeText(this, "Data obat tidak valid", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        Intent intent = new Intent(this, TambahObatActivity.class);
-        intent.putExtra("mode", "edit");
-        intent.putExtra("obat_id", currentObat.getIdObat());
-        intent.putExtra("nama_obat", currentObat.getNamaObat());
-        intent.putExtra("jenis_obat", currentObat.getJenisObat().name());
-        intent.putExtra("stock", currentObat.getStock());
-        intent.putExtra("gambar", currentObat.getGambar());
-        intent.putExtra("id_supplier", currentObat.getIdSupplier());
-        startActivity(intent);
-        finish();
-    }
-
-    private void showDeleteConfirmationDialog() {
-        new AlertDialog.Builder(this)
-                .setTitle("Konfirmasi Hapus")
-                .setMessage("Apakah Anda yakin ingin menghapus obat " + currentObat.getNamaObat() + "?")
-                .setPositiveButton("Ya", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        deleteObat();
-                    }
-                })
-                .setNegativeButton("Tidak", null)
-                .show();
-    }
-
-    private void deleteObat() {
-        if (currentObat == null) {
-            Toast.makeText(this, "Data obat tidak valid", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        viewModel.deleteObat(currentObat.getIdObat());
-        Toast.makeText(this, "Obat berhasil dihapus", Toast.LENGTH_SHORT).show();
-        finish(); // Kembali ke halaman sebelumnya
     }
 }

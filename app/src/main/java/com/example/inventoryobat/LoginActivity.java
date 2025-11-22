@@ -18,7 +18,7 @@ public class LoginActivity extends AppCompatActivity {
         binding = ActivityLoginBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        viewModel = new MainViewModel(this);
+        viewModel = new MainViewModel();
 
         viewModel.getLoginStatus().observe(this, isSuccess -> {
             if (isSuccess) {
