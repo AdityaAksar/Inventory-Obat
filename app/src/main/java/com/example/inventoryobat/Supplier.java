@@ -1,23 +1,36 @@
 package com.example.inventoryobat;
 
+import com.google.gson.annotations.SerializedName;
+
 public class Supplier {
+    @SerializedName("id_supplier")
     private int idSupplier;
+
+    @SerializedName("nama_supplier")
     private String namaSupplier;
+
+    @SerializedName("nomor")
     private String nomor;
+
+    @SerializedName("email")
     private String email;
 
-    public Supplier(){
+    @SerializedName("created_at")
+    private String createdAt;
 
-    }
+    @SerializedName("updated_at")
+    private String updatedAt;
 
+    // Constructors
+    public Supplier() {}
 
-    public Supplier(int idSupplier, String namaSupplier, String nomor, String email) {
-        this.idSupplier = idSupplier;
+    public Supplier(String namaSupplier, String nomor, String email) {
         this.namaSupplier = namaSupplier;
         this.nomor = nomor;
         this.email = email;
     }
 
+    // Getters & Setters
     public int getIdSupplier() {
         return idSupplier;
     }
@@ -49,5 +62,25 @@ public class Supplier {
     public void setEmail(String email) {
         this.email = email;
     }
-}
 
+    public String getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(String createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public String getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(String updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    @Override
+    public String toString() {
+        return namaSupplier;
+    }
+}
