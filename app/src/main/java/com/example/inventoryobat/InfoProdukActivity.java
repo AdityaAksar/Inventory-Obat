@@ -1,7 +1,6 @@
 package com.example.inventoryobat;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -19,6 +18,7 @@ public class InfoProdukActivity extends AppCompatActivity {
     private MainViewModel viewModel;
     private Obat currentObat;
     private int quantity = 0;
+    private int obatId = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,11 +28,9 @@ public class InfoProdukActivity extends AppCompatActivity {
 
         viewModel = new MainViewModel();
 
-        int obatId = getIntent().getIntExtra("obat_id", -1);
+        obatId = getIntent().getIntExtra("obat_id", -1);
 
-        if (obatId != -1) {
-            loadObatDetail(obatId);
-        } else {
+        if (obatId == -1) {
             Toast.makeText(this, "Data obat tidak ditemukan", Toast.LENGTH_SHORT).show();
             finish();
         }
@@ -53,6 +51,14 @@ public class InfoProdukActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        if (obatId != -1) {
+            loadObatDetail(obatId);
+        }
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_info_produk, menu);
         return true;
@@ -63,24 +69,27 @@ public class InfoProdukActivity extends AppCompatActivity {
         if (item.getItemId() == R.id.action_edit) {
             Intent editIntent = new Intent(this, TambahObatActivity.class);
             editIntent.putExtra("edit_mode", true);
-            editIntent.putExtra("obat_id", currentObat.getIdObat());
-            startActivity(editIntent);
+            if (currentObat != null) {
+                editIntent.putExtra("obat_id", currentObat.getIdObat());
+                startActivity(editIntent);
+            }
             return true;
         } else if (item.getItemId() == R.id.action_delete) {
-            viewModel.deleteObat(currentObat.getIdObat());
-            Toast.makeText(this, "Obat dihapus", Toast.LENGTH_SHORT).show();
-            finish();
+            if (currentObat != null) {
+                viewModel.deleteObat(currentObat.getIdObat());
+                Toast.makeText(this, "Obat dihapus", Toast.LENGTH_SHORT).show();
+                finish();
+            }
             return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
-    private void loadObatDetail(int obatId) {
-        viewModel.getObatById(obatId).observe(this, obat -> {
+    private void loadObatDetail(int id) {
+        viewModel.getObatById(id).observe(this, obat -> {
             if (obat != null) {
                 currentObat = obat;
                 binding.tvNamaObatDetail.setText(obat.getNamaObat());
-//                binding.tvJenisObatDetail.setText("Jenis: " + obat.getJenisObat());
                 binding.tvJenisObatDetail.setText("Jenis: " + currentObat.getJenisObat());
                 binding.tvStockDetail.setText("Stock: " + obat.getStock());
 
@@ -102,6 +111,8 @@ public class InfoProdukActivity extends AppCompatActivity {
     }
 
     private void updateStock() {
+        if (currentObat == null) return;
+
         String quantityStr = binding.edtQuantity.getText().toString().trim();
 
         if (quantityStr.isEmpty()) {
@@ -115,7 +126,10 @@ public class InfoProdukActivity extends AppCompatActivity {
         if (newStock >= 0) {
             viewModel.updateStock(currentObat.getIdObat(), newStock);
             Toast.makeText(this, "Stock berhasil diupdate", Toast.LENGTH_SHORT).show();
-            finish();
+            loadObatDetail(currentObat.getIdObat());
+            quantity = 0;
+            binding.edtQuantity.setText("0");
+
         } else {
             Toast.makeText(this, "Stock tidak boleh negatif", Toast.LENGTH_SHORT).show();
         }
