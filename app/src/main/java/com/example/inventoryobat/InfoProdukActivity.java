@@ -2,11 +2,8 @@ package com.example.inventoryobat;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
@@ -33,7 +30,27 @@ public class InfoProdukActivity extends AppCompatActivity {
         if (obatId == -1) {
             Toast.makeText(this, "Data obat tidak ditemukan", Toast.LENGTH_SHORT).show();
             finish();
+            return;
         }
+
+        binding.btnBack.setOnClickListener(v -> finish());
+
+        binding.actionEdit.setOnClickListener(v -> {
+            if (currentObat != null) {
+                Intent editIntent = new Intent(this, TambahObatActivity.class);
+                editIntent.putExtra("edit_mode", true);
+                editIntent.putExtra("obat_id", currentObat.getIdObat());
+                startActivity(editIntent);
+            }
+        });
+
+        binding.actionDelete.setOnClickListener(v -> {
+            if (currentObat != null) {
+                viewModel.deleteObat(currentObat.getIdObat());
+                Toast.makeText(this, "Obat dihapus", Toast.LENGTH_SHORT).show();
+                finish();
+            }
+        });
 
         binding.btnKurang.setOnClickListener(v -> {
             if (quantity > 0) {
@@ -56,33 +73,6 @@ public class InfoProdukActivity extends AppCompatActivity {
         if (obatId != -1) {
             loadObatDetail(obatId);
         }
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_info_produk, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if (item.getItemId() == R.id.action_edit) {
-            Intent editIntent = new Intent(this, TambahObatActivity.class);
-            editIntent.putExtra("edit_mode", true);
-            if (currentObat != null) {
-                editIntent.putExtra("obat_id", currentObat.getIdObat());
-                startActivity(editIntent);
-            }
-            return true;
-        } else if (item.getItemId() == R.id.action_delete) {
-            if (currentObat != null) {
-                viewModel.deleteObat(currentObat.getIdObat());
-                Toast.makeText(this, "Obat dihapus", Toast.LENGTH_SHORT).show();
-                finish();
-            }
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
     }
 
     private void loadObatDetail(int id) {
