@@ -9,6 +9,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.example.inventoryobat.databinding.FragmentObatBinding;
@@ -43,7 +44,8 @@ public class ObatFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        binding.rvObat.setLayoutManager(new LinearLayoutManager(getContext()));
+//        binding.rvObat.setLayoutManager(new LinearLayoutManager(getContext()));
+        binding.rvObat.setLayoutManager(new GridLayoutManager(getContext(), 2));
 
         viewModel = new MainViewModel();
 
