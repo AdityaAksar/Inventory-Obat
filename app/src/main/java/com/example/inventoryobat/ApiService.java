@@ -7,6 +7,8 @@ import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.DELETE;
+import retrofit2.http.Field;
+import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.Multipart;
 import retrofit2.http.POST;
@@ -37,14 +39,25 @@ public interface ApiService {
     );
 
     @Multipart
-    @PUT("v1/obats/{id}")
-    Call<ApiResponse<Obat>> updateObat(
+    @POST("v1/obats/{id}")
+    Call<ApiResponse<Obat>> updateObatWithImage(
             @Path("id") int id,
             @Part("nama_obat") RequestBody nama,
             @Part("jenis_obat") RequestBody jenis,
             @Part("stock") RequestBody stock,
             @Part("id_supplier") RequestBody idSupplier,
-            @Part MultipartBody.Part gambar
+            @Part MultipartBody.Part gambar,
+            @Part("_method") RequestBody method
+    );
+
+    @FormUrlEncoded
+    @PUT("v1/obats/{id}")
+    Call<ApiResponse<Obat>> updateObatNoImage(
+            @Path("id") int id,
+            @Field("nama_obat") String nama,
+            @Field("jenis_obat") String jenis,
+            @Field("stock") int stock,
+            @Field("id_supplier") int idSupplier
     );
 
     @PUT("v1/obats/{id}/stock")

@@ -65,10 +65,13 @@ public class ObatFragment extends Fragment {
                 Toast.makeText(getContext(), error, Toast.LENGTH_SHORT).show();
             }
         });
-
-        loadData();
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        loadData();
+    }
     private void loadData() {
         if ("SEMUA".equals(jenisFilter)) {
             viewModel.loadAllObat();

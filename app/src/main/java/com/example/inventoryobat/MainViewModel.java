@@ -102,20 +102,12 @@ public class MainViewModel extends ViewModel {
         return result;
     }
 
-    public void insertObat(Obat obat) {
-        // Implement di Activity dengan file upload
-    }
-
-    public void updateObat(Obat obat) {
-        // Implement di Activity dengan file upload
-    }
-
     public void deleteObat(int id) {
         apiService.deleteObat(id).enqueue(new Callback<ApiResponse<String>>() {
             @Override
             public void onResponse(Call<ApiResponse<String>> call, Response<ApiResponse<String>> response) {
                 if (response.isSuccessful()) {
-                    loadAllObat(); // Refresh list
+                    loadAllObat();
                 }
             }
 

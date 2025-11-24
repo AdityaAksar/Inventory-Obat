@@ -41,12 +41,12 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(MainActivity.this, TambahObatActivity.class);
             startActivity(intent);
         });
+        setupViewPager();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        setupViewPager();
     }
 
     private void setupViewPager() {

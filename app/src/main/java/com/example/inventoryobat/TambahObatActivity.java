@@ -204,63 +204,98 @@ public class TambahObatActivity extends AppCompatActivity {
         int stock = Integer.parseInt(stockStr);
         String jenis = (String) binding.spinnerJenisObat.getSelectedItem();
 
-        RequestBody namaBody = RequestBody.create(nama, MediaType.parse("text/plain"));
-        RequestBody jenisBody = RequestBody.create(jenis, MediaType.parse("text/plain"));
-        RequestBody stockBody = RequestBody.create(String.valueOf(stock), MediaType.parse("text/plain"));
-        RequestBody supplierBody = RequestBody.create(String.valueOf(selectedSupplierId), MediaType.parse("text/plain"));
-
-        MultipartBody.Part gambarPart = null;
-        if (selectedImageUri != null) {
-            File file = uriToFile(selectedImageUri);
-            if (file != null) {
-                RequestBody requestBody = RequestBody.create(file, MediaType.parse("image/*"));
-                gambarPart = MultipartBody.Part.createFormData("gambar", file.getName(), requestBody);
-            }
-        }
-
         if (isEdit) {
-            apiService.updateObat(editObatId, namaBody, jenisBody, stockBody, supplierBody, gambarPart)
-                .enqueue(new Callback<ApiResponse<Obat>>() {
-                    @Override
-                    public void onResponse(Call<ApiResponse<Obat>> call, Response<ApiResponse<Obat>> response) {
-                        if (response.isSuccessful()) {
-                            Toast.makeText(TambahObatActivity.this, "Obat berhasil diupdate!", Toast.LENGTH_SHORT).show();
-                            finish();
-                        } else {
-                            Toast.makeText(TambahObatActivity.this, "Gagal update obat: " + response.code(), Toast.LENGTH_SHORT).show();
-                        }
-                    }
+            if (selectedImageUri != null) {
+                File file = uriToFile(selectedImageUri);
+                MultipartBody.Part gambarPart = null;
+                if (file != null) {
+                    RequestBody requestBody = RequestBody.create(file, MediaType.parse("image/*"));
+                    gambarPart = MultipartBody.Part.createFormData("gambar", file.getName(), requestBody);
+                }
 
-                    @Override
-                    public void onFailure(Call<ApiResponse<Obat>> call, Throwable t) {
-                        Toast.makeText(TambahObatActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                });
+                RequestBody namaBody = RequestBody.create(nama, MediaType.parse("text/plain"));
+                RequestBody jenisBody = RequestBody.create(jenis, MediaType.parse("text/plain"));
+                RequestBody stockBody = RequestBody.create(String.valueOf(stock), MediaType.parse("text/plain"));
+                RequestBody supplierBody = RequestBody.create(String.valueOf(selectedSupplierId), MediaType.parse("text/plain"));
+                RequestBody methodBody = RequestBody.create("PUT", MediaType.parse("text/plain")); // Trik Laravel
+
+                apiService.updateObatWithImage(editObatId, namaBody, jenisBody, stockBody, supplierBody, gambarPart, methodBody)
+                        .enqueue(new Callback<ApiResponse<Obat>>() {
+                            @Override
+                            public void onResponse(Call<ApiResponse<Obat>> call, Response<ApiResponse<Obat>> response) {
+                                if (response.isSuccessful()) {
+                                    Toast.makeText(TambahObatActivity.this, "Update (Img) Berhasil!", Toast.LENGTH_SHORT).show();
+                                    finish();
+                                } else {
+                                    Toast.makeText(TambahObatActivity.this, "Gagal Update: " + response.code(), Toast.LENGTH_SHORT).show();
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Call<ApiResponse<Obat>> call, Throwable t) {
+                                Toast.makeText(TambahObatActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                            }
+                        });
+
+            } else {
+                apiService.updateObatNoImage(editObatId, nama, jenis, stock, selectedSupplierId)
+                        .enqueue(new Callback<ApiResponse<Obat>>() {
+                            @Override
+                            public void onResponse(Call<ApiResponse<Obat>> call, Response<ApiResponse<Obat>> response) {
+                                if (response.isSuccessful()) {
+                                    Toast.makeText(TambahObatActivity.this, "Update Data Berhasil!", Toast.LENGTH_SHORT).show();
+                                    finish();
+                                } else {
+                                    Toast.makeText(TambahObatActivity.this, "Gagal Update: " + response.code(), Toast.LENGTH_SHORT).show();
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Call<ApiResponse<Obat>> call, Throwable t) {
+                                Toast.makeText(TambahObatActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                            }
+                        });
+            }
+
         } else {
-            apiService.createObat(namaBody, jenisBody, stockBody, supplierBody, gambarPart)
-                .enqueue(new Callback<ApiResponse<Obat>>() {
-                    @Override
-                    public void onResponse(Call<ApiResponse<Obat>> call, Response<ApiResponse<Obat>> response) {
-                        if (response.isSuccessful()) {
-                            Toast.makeText(TambahObatActivity.this, "Obat berhasil ditambahkan!", Toast.LENGTH_SHORT).show();
-                            finish();
-                        } else {
-                            Toast.makeText(TambahObatActivity.this, "Gagal tambah obat: " + response.code(), Toast.LENGTH_SHORT).show();
-                        }
-                    }
+            RequestBody namaBody = RequestBody.create(nama, MediaType.parse("text/plain"));
+            RequestBody jenisBody = RequestBody.create(jenis, MediaType.parse("text/plain"));
+            RequestBody stockBody = RequestBody.create(String.valueOf(stock), MediaType.parse("text/plain"));
+            RequestBody supplierBody = RequestBody.create(String.valueOf(selectedSupplierId), MediaType.parse("text/plain"));
 
-                    @Override
-                    public void onFailure(Call<ApiResponse<Obat>> call, Throwable t) {
-                        Toast.makeText(TambahObatActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                });
+            MultipartBody.Part gambarPart = null;
+            if (selectedImageUri != null) {
+                File file = uriToFile(selectedImageUri);
+                if (file != null) {
+                    RequestBody requestBody = RequestBody.create(file, MediaType.parse("image/*"));
+                    gambarPart = MultipartBody.Part.createFormData("gambar", file.getName(), requestBody);
+                }
+            }
+
+            apiService.createObat(namaBody, jenisBody, stockBody, supplierBody, gambarPart)
+                    .enqueue(new Callback<ApiResponse<Obat>>() {
+                        @Override
+                        public void onResponse(Call<ApiResponse<Obat>> call, Response<ApiResponse<Obat>> response) {
+                            if (response.isSuccessful()) {
+                                Toast.makeText(TambahObatActivity.this, "Obat berhasil ditambahkan!", Toast.LENGTH_SHORT).show();
+                                finish();
+                            } else {
+                                Toast.makeText(TambahObatActivity.this, "Gagal tambah obat: " + response.code(), Toast.LENGTH_SHORT).show();
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<ApiResponse<Obat>> call, Throwable t) {
+                            Toast.makeText(TambahObatActivity.this, "Error: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    });
         }
     }
 
     private File uriToFile(Uri uri) {
         try {
             InputStream inputStream = getContentResolver().openInputStream(uri);
-            File file = new File(getCacheDir(), "temp_image.jpg");
+            File file = new File(getCacheDir(), "temp_image_" + System.currentTimeMillis() + ".jpg");
             FileOutputStream outputStream = new FileOutputStream(file);
 
             byte[] buffer = new byte[1024];
