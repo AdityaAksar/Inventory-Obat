@@ -4,7 +4,8 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import java.util.ArrayList;
+import com.google.firebase.auth.FirebaseAuth;
+
 import java.util.List;
 
 import retrofit2.Call;
@@ -13,31 +14,49 @@ import retrofit2.Response;
 
 public class MainViewModel extends ViewModel {
     private final ApiService apiService;
+    private final FirebaseAuth mAuth;
     private final MutableLiveData<List<Obat>> obatListLiveData = new MutableLiveData<>();
     private final MutableLiveData<List<Supplier>> supplierListLiveData = new MutableLiveData<>();
     private final MutableLiveData<Boolean> loginStatus = new MutableLiveData<>();
+    private final MutableLiveData<String> loginError = new MutableLiveData<>();
     private final MutableLiveData<Boolean> isLoading = new MutableLiveData<>();
     private final MutableLiveData<String> errorMessage = new MutableLiveData<>();
 
     public MainViewModel() {
         apiService = ApiConfig.getApiService();
+        mAuth = FirebaseAuth.getInstance();
     }
 
-    // ========== LOGIN ==========
     public LiveData<Boolean> getLoginStatus() {
         return loginStatus;
     }
 
-    public void login(String username, String password) {
-        // Untuk sekarang, validasi lokal (bisa dikembangkan ke server)
-        if ("admin".equals(username) && "admin".equals(password)) {
-            loginStatus.setValue(true);
-        } else {
-            loginStatus.setValue(false);
-        }
+    public LiveData<String> getLoginError() {
+        return loginError;
     }
 
-    // ========== OBAT ==========
+    public void login(String email, String password) {
+        isLoading.setValue(true);
+        mAuth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener(task -> {
+                    isLoading.setValue(false);
+                    if (task.isSuccessful()) {
+                        loginStatus.setValue(true);
+                    } else {
+                        loginStatus.setValue(false);
+                        loginError.setValue(task.getException() != null ? task.getException().getMessage() : "Login Gagal");
+                    }
+                });
+    }
+
+    public boolean isUserLoggedIn() {
+        return mAuth.getCurrentUser() != null;
+    }
+
+    public void logout() {
+        mAuth.signOut();
+    }
+
     public LiveData<List<Obat>> getObatList() {
         return obatListLiveData;
     }
@@ -135,7 +154,6 @@ public class MainViewModel extends ViewModel {
                 });
     }
 
-    // ========== SUPPLIER ==========
     public LiveData<List<Supplier>> getSupplierList() {
         return supplierListLiveData;
     }
@@ -156,7 +174,6 @@ public class MainViewModel extends ViewModel {
         });
     }
 
-    // ========== LOADING & ERROR ==========
     public LiveData<Boolean> getIsLoading() {
         return isLoading;
     }

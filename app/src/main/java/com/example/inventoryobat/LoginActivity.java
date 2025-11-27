@@ -20,26 +20,42 @@ public class LoginActivity extends AppCompatActivity {
 
         viewModel = new MainViewModel();
 
+        if (viewModel.isUserLoggedIn()) {
+            startActivity(new Intent(LoginActivity.this, MainActivity.class));
+            finish();
+            return;
+        }
+
         viewModel.getLoginStatus().observe(this, isSuccess -> {
             if (isSuccess) {
                 Toast.makeText(this, "Login Berhasil!", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(LoginActivity.this, WelcomeActivity.class);
                 startActivity(intent);
                 finish();
-            } else {
-                Toast.makeText(this, "Username atau Password Salah", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        viewModel.getLoginError().observe(this, errorMsg -> {
+            if (errorMsg != null) {
+                Toast.makeText(this, errorMsg, Toast.LENGTH_SHORT).show();
             }
         });
 
         binding.btnLogin.setOnClickListener(v -> {
-            String username = binding.edtUsername.getText().toString().trim();
+            String email = binding.edtEmail.getText().toString().trim();
             String password = binding.edtPassword.getText().toString().trim();
 
-            if (!username.isEmpty() && !password.isEmpty()) {
-                viewModel.login(username, password);
+            if (!email.isEmpty() && !password.isEmpty()) {
+                viewModel.login(email, password);
             } else {
-                Toast.makeText(this, "Isi semua kolom", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Isi email dan password", Toast.LENGTH_SHORT).show();
             }
         });
+
+        if (binding.btnToRegister != null) {
+            binding.btnToRegister.setOnClickListener(v -> {
+                startActivity(new Intent(LoginActivity.this, RegisterActivity.class));
+            });
+        }
     }
 }

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "542288827524",
+    "project_id": "inventory-apotek",
+    "storage_bucket": "inventory-apotek.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:542288827524:android:5bc10d5453f3e0fd65ded1",
+        "android_client_info": {
+          "package_name": "com.example.inventoryobat"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAVotY0bjNmr_Rk-NIh6PyRYCgWasawoyY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

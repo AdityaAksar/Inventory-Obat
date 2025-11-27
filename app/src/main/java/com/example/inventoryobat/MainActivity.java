@@ -47,6 +47,17 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(MainActivity.this, TambahObatActivity.class);
             startActivity(intent);
         });
+
+        binding.btnLogout.setOnClickListener(v -> {
+            viewModel.logout();
+
+            Toast.makeText(MainActivity.this, "Berhasil Logout", Toast.LENGTH_SHORT).show();
+
+            Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+            finish();
+        });
     }
 
     private void setupSearchListener() {
