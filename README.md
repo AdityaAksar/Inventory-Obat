@@ -77,11 +77,6 @@ Aplikasi membutuhkan izin berikut yang diatur dalam `AndroidManifest.xml` dan `P
 * `INTERNET`: Untuk akses API dan Firebase.
 * `READ_EXTERNAL_STORAGE` / `READ_MEDIA_IMAGES`: Untuk memilih gambar dari galeri saat menambah/edit obat (disesuaikan dengan versi Android/SDK 33+).
 
-## 📝 Catatan Pengembang
-
-* **Compile SDK**: Project ini dikonfigurasi menggunakan `compileSdk 36` (Android 16 Preview/Baklava). Pastikan SDK Manager Anda sudah mengunduh platform tersebut atau sesuaikan ke SDK 34/35 jika perlu.
-* **API Security**: Saat ini `ApiKey` API Firebase terekspos di `google-services.json`. Pastikan untuk menerapkan pembatasan (restrictions) pada Google Cloud Console untuk produksi.
-
 ## 👤 Author
 1. Lila Vimala
 2. Cahya Nabila Mannassai
