@@ -82,8 +82,8 @@ public class MainActivity extends AppCompatActivity {
 
         for (JenisObat jenis : JenisObat.values()) {
             adapter.addFragment(
-                    ObatFragment.newInstance(jenis.getDisplayName()),
-                    jenis.getDisplayName()
+                    ObatFragment.newInstance(jenis.displayName),
+                    jenis.displayName
             );
         }
 

@@ -68,7 +68,7 @@ public class MainViewModel extends ViewModel {
             public void onResponse(Call<ApiResponse<List<Obat>>> call, Response<ApiResponse<List<Obat>>> response) {
                 isLoading.setValue(false);
                 if (response.isSuccessful() && response.body() != null) {
-                    obatListLiveData.setValue(response.body().getData());
+                    obatListLiveData.setValue(response.body().data);
                 } else {
                     errorMessage.setValue("Gagal memuat data obat");
                 }
@@ -89,7 +89,7 @@ public class MainViewModel extends ViewModel {
             public void onResponse(Call<ApiResponse<List<Obat>>> call, Response<ApiResponse<List<Obat>>> response) {
                 isLoading.setValue(false);
                 if (response.isSuccessful() && response.body() != null) {
-                    obatListLiveData.setValue(response.body().getData());
+                    obatListLiveData.setValue(response.body().data);
                 } else {
                     errorMessage.setValue("Gagal memuat data obat");
                 }
@@ -109,7 +109,7 @@ public class MainViewModel extends ViewModel {
             @Override
             public void onResponse(Call<ApiResponse<Obat>> call, Response<ApiResponse<Obat>> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    result.setValue(response.body().getData());
+                    result.setValue(response.body().data);
                 }
             }
 
@@ -163,7 +163,7 @@ public class MainViewModel extends ViewModel {
             @Override
             public void onResponse(Call<ApiResponse<List<Supplier>>> call, Response<ApiResponse<List<Supplier>>> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    supplierListLiveData.setValue(response.body().getData());
+                    supplierListLiveData.setValue(response.body().data);
                 }
             }
 

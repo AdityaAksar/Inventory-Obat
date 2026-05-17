@@ -74,7 +74,7 @@ public class TambahObatActivity extends AppCompatActivity {
     private void setupJenisObatSpinner() {
         ArrayList<String> jenisObatList = new ArrayList<>();
         for (JenisObat jenis : JenisObat.values()) {
-            jenisObatList.add(jenis.getDisplayName());
+            jenisObatList.add(jenis.displayName);
         }
 
         ArrayAdapter<String> adapter = new ArrayAdapter<>(
@@ -107,7 +107,7 @@ public class TambahObatActivity extends AppCompatActivity {
                 @Override
                 public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                     if (position >= 0 && position < supplierList.size()) {
-                        selectedSupplierId = supplierList.get(position).getIdSupplier();
+                        selectedSupplierId = supplierList.get(position).idSupplier;
                     }
                 }
 
@@ -123,10 +123,10 @@ public class TambahObatActivity extends AppCompatActivity {
         viewModel.getObatById(editObatId).observe(this, obat -> {
             if (obat == null) return;
 
-            binding.edtNamaObat.setText(obat.getNamaObat());
-            binding.edtStock.setText(String.valueOf(obat.getStock()));
+            binding.edtNamaObat.setText(obat.namaObat);
+            binding.edtStock.setText(String.valueOf(obat.stock));
 
-            String jenisObat = obat.getJenisObat();
+            String jenisObat = obat.jenisObat;
             ArrayAdapter<String> adapter = (ArrayAdapter<String>) binding.spinnerJenisObat.getAdapter();
             if (adapter != null) {
                 int position = adapter.getPosition(jenisObat);
@@ -134,16 +134,16 @@ public class TambahObatActivity extends AppCompatActivity {
             }
 
             for (int i = 0; i < supplierList.size(); i++) {
-                if (supplierList.get(i).getIdSupplier() == obat.getIdSupplier()) {
+                if (supplierList.get(i).idSupplier == obat.idSupplier) {
                     binding.spinnerSupplier.setSelection(i);
-                    selectedSupplierId = obat.getIdSupplier();
+                    selectedSupplierId = obat.idSupplier;
                     break;
                 }
             }
 
-            if (obat.getGambarUrl() != null && !obat.getGambarUrl().isEmpty()) {
+            if (obat.gambarUrl != null && !obat.gambarUrl.isEmpty()) {
                 Glide.with(this)
-                        .load(obat.getGambarUrl())
+                        .load(obat.gambarUrl)
                         .placeholder(R.drawable.ic_launcher_foreground)
                         .error(R.drawable.ic_launcher_foreground)
                         .into(binding.imgPreview);

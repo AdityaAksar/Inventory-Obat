@@ -39,14 +39,14 @@ public class InfoProdukActivity extends AppCompatActivity {
             if (currentObat != null) {
                 Intent editIntent = new Intent(this, TambahObatActivity.class);
                 editIntent.putExtra("edit_mode", true);
-                editIntent.putExtra("obat_id", currentObat.getIdObat());
+                editIntent.putExtra("obat_id", currentObat.idObat);
                 startActivity(editIntent);
             }
         });
 
         binding.actionDelete.setOnClickListener(v -> {
             if (currentObat != null) {
-                viewModel.deleteObat(currentObat.getIdObat());
+                viewModel.deleteObat(currentObat.idObat);
                 Toast.makeText(this, "Obat dihapus", Toast.LENGTH_SHORT).show();
                 finish();
             }
@@ -79,19 +79,19 @@ public class InfoProdukActivity extends AppCompatActivity {
         viewModel.getObatById(id).observe(this, obat -> {
             if (obat != null) {
                 currentObat = obat;
-                binding.tvNamaObatDetail.setText(obat.getNamaObat());
-                binding.tvJenisObatDetail.setText("Jenis: " + currentObat.getJenisObat());
-                binding.tvStockDetail.setText("Stock: " + obat.getStock());
+                binding.tvNamaObatDetail.setText(obat.namaObat);
+                binding.tvJenisObatDetail.setText("Jenis: " + currentObat.jenisObat);
+                binding.tvStockDetail.setText("Stock: " + obat.stock);
 
-                if (obat.getSupplier() != null) {
-                    binding.tvSupplierDetail.setText("Supplier: " + obat.getSupplier().getNamaSupplier());
-                    binding.tvEmailSupplier.setText("Email: " + obat.getSupplier().getEmail());
-                    binding.tvNomorSupplier.setText("Nomor: " + obat.getSupplier().getNomor());
+                if (obat.supplier != null) {
+                    binding.tvSupplierDetail.setText("Supplier: " + obat.supplier.getNamaSupplier());
+                    binding.tvEmailSupplier.setText("Email: " + obat.supplier.email);
+                    binding.tvNomorSupplier.setText("Nomor: " + obat.supplier.nomor);
                 }
 
-                if (obat.getGambarUrl() != null && !obat.getGambarUrl().isEmpty()) {
+                if (obat.gambarUrl != null && !obat.gambarUrl.isEmpty()) {
                     Glide.with(this)
-                            .load(obat.getGambarUrl())
+                            .load(obat.gambarUrl)
                             .placeholder(R.drawable.ic_launcher_foreground)
                             .error(R.drawable.ic_launcher_foreground)
                             .into(binding.imgObatDetail);
@@ -111,12 +111,12 @@ public class InfoProdukActivity extends AppCompatActivity {
         }
 
         int qty = Integer.parseInt(quantityStr);
-        int newStock = currentObat.getStock() + qty;
+        int newStock = currentObat.stock + qty;
 
         if (newStock >= 0) {
-            viewModel.updateStock(currentObat.getIdObat(), newStock);
+            viewModel.updateStock(currentObat.idObat, newStock);
             Toast.makeText(this, "Stock berhasil diupdate", Toast.LENGTH_SHORT).show();
-            loadObatDetail(currentObat.getIdObat());
+            loadObatDetail(currentObat.idObat);
             quantity = 0;
             binding.edtQuantity.setText("0");
 

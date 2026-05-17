@@ -41,13 +41,13 @@ public class ObatAdapter extends RecyclerView.Adapter<ObatAdapter.ObatViewHolder
     public void onBindViewHolder(@NonNull ObatViewHolder holder, int position) {
         Obat obat = obatList.get(position);
 
-        holder.tvNamaObat.setText(obat.getNamaObat());
-        holder.tvJenisObat.setText("Jenis: " + obat.getJenisObat());
-        holder.tvStock.setText("Stock: " + obat.getStock());
+        holder.tvNamaObat.setText(obat.namaObat);
+        holder.tvJenisObat.setText("Jenis: " + obat.jenisObat);
+        holder.tvStock.setText("Stock: " + obat.stock);
 
-        if (obat.getGambarUrl() != null && !obat.getGambarUrl().isEmpty()) {
+        if (obat.gambarUrl != null && !obat.gambarUrl.isEmpty()) {
             Glide.with(context)
-                    .load(obat.getGambarUrl())
+                    .load(obat.gambarUrl)
                     .placeholder(R.drawable.ic_launcher_foreground)
                     .error(R.drawable.ic_launcher_foreground)
                     .into(holder.imgObat);
@@ -55,7 +55,7 @@ public class ObatAdapter extends RecyclerView.Adapter<ObatAdapter.ObatViewHolder
 
         holder.itemView.setOnClickListener(v -> {
             Intent intent = new Intent(context, InfoProdukActivity.class);
-            intent.putExtra("obat_id", obat.getIdObat());
+            intent.putExtra("obat_id", obat.idObat);
             context.startActivity(intent);
         });
     }
@@ -79,7 +79,7 @@ public class ObatAdapter extends RecyclerView.Adapter<ObatAdapter.ObatViewHolder
             obatList.addAll(obatFullList);
         } else {
             for (Obat obat : obatFullList) {
-                if (obat.getNamaObat().toLowerCase().contains(keyword.toLowerCase())) {
+                if (obat.namaObat.toLowerCase().contains(keyword.toLowerCase())) {
                     obatList.add(obat);
                 }
             }
