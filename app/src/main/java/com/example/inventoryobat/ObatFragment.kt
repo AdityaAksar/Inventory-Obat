@@ -19,11 +19,11 @@ class ObatFragment : Fragment() {
     private var jenisFilter: String? = null
 
     companion object {
-        fun newInstance(jenis: String): ObatFragment {
-            return ObatFragment().apply {
-                arguments = Bundle().apply {
-                    putString("jenis", jenis)
-                }
+        private const val ARG_JENIS = "jenis"
+
+        fun newInstance(jenis: String) = ObatFragment().apply {
+            arguments = Bundle().apply {
+                putString(ARG_JENIS, jenis)
             }
         }
     }
@@ -43,8 +43,7 @@ class ObatFragment : Fragment() {
         binding.rvObat.layoutManager = GridLayoutManager(context, 2)
 
         viewModel = MainViewModel()
-
-        jenisFilter = arguments?.getString("jenis")
+        jenisFilter = arguments?.getString(ARG_JENIS)
 
         adapter = ObatAdapter(requireContext(), emptyList())
         binding.rvObat.adapter = adapter
@@ -54,9 +53,7 @@ class ObatFragment : Fragment() {
         }
 
         viewModel.errorMessage.observe(viewLifecycleOwner) { error ->
-            error?.let {
-                Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
-            }
+            error?.let { Toast.makeText(context, it, Toast.LENGTH_SHORT).show() }
         }
     }
 
@@ -66,10 +63,9 @@ class ObatFragment : Fragment() {
     }
 
     private fun loadData() {
-        val filter = jenisFilter
-        when {
-            filter == null || filter.isEmpty() || filter == "SEMUA" -> viewModel.loadAllObat()
-            else -> viewModel.loadObatByJenis(filter)
+        when (jenisFilter) {
+            null, "", "SEMUA" -> viewModel.loadAllObat()
+            else -> viewModel.loadObatByJenis(jenisFilter!!)
         }
     }
 

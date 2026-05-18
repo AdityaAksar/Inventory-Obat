@@ -11,23 +11,17 @@ object PermissionHelper {
 
     const val PERMISSION_REQUEST_CODE = 100
 
-    @JvmStatic
-    fun checkPermission(activity: Activity): Boolean {
-        val permission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+    private val requiredPermission: String
+        get() = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             Manifest.permission.READ_MEDIA_IMAGES
         } else {
             Manifest.permission.READ_EXTERNAL_STORAGE
         }
-        return ContextCompat.checkSelfPermission(activity, permission) == PackageManager.PERMISSION_GRANTED
-    }
 
-    @JvmStatic
+    fun checkPermission(activity: Activity): Boolean =
+        ContextCompat.checkSelfPermission(activity, requiredPermission) == PackageManager.PERMISSION_GRANTED
+
     fun requestPermission(activity: Activity) {
-        val permission = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            Manifest.permission.READ_MEDIA_IMAGES
-        } else {
-            Manifest.permission.READ_EXTERNAL_STORAGE
-        }
-        ActivityCompat.requestPermissions(activity, arrayOf(permission), PERMISSION_REQUEST_CODE)
+        ActivityCompat.requestPermissions(activity, arrayOf(requiredPermission), PERMISSION_REQUEST_CODE)
     }
 }

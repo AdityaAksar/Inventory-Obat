@@ -6,6 +6,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object ApiConfig {
+
     private const val BASE_URL = "https://apotek.astrantia.site/api/"
 
     private val retrofit: Retrofit by lazy {
@@ -24,6 +25,5 @@ object ApiConfig {
             .build()
     }
 
-    @JvmStatic
     fun getApiService(): ApiService = retrofit.create(ApiService::class.java)
 }

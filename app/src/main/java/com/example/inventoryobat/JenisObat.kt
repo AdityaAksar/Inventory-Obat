@@ -1,6 +1,6 @@
 package com.example.inventoryobat
 
-enum class JenisObat(@JvmField val displayName: String) {
+enum class JenisObat(val displayName: String) {
     KAPSUL("Kapsul"),
     TABLET("Tablet"),
     SIRUP("Sirup"),
